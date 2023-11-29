@@ -3,7 +3,7 @@ import processing.serial.*;
 
 FFT fft;  // Fast Fourier Transform object
 AudioIn in;
-final int W=128, H=64;  // window size: 128x64
+final int W=16, H=8;  // window size: 128x64
 final int fps = 30;
 final int BAUD_RATE = 230400;
 float[] spectrum = new float[512];  // create a spectrum with 512 frequency bands
@@ -35,8 +35,8 @@ void draw() {
   fft.analyze(spectrum);  // generate spectrum data
   for(int i=0;i<W;i++)
   {
-    float v = spectrum[i/4]*50*H; // amplify 50x and scale by H
-    data[i]=(byte)((v>H-1)?H-1:v);  // clamp to H-1 max 
+    float v = spectrum[i/8]*50*H; // amplify 50x, reduce to 32 bands, and scale by H
+    data[i]= (byte)(H-1-((v>H-1)?H-1:v));  // clamp to H-1 max 
     line(i, H-1-data[i], i, H-1 );  // draw spectrum line
   } 
   // STEP 3: send frame header array as well as data array to serial
