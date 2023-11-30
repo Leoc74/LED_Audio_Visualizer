@@ -32,7 +32,7 @@ void setup() {
 void colorBand(int band, double height, unsigned long color){
   //array which pairs up the pixels which are next to each other on the matrix
   //The first element in the array is the pair of pixels at the bottom of the matrix
-  int pairArr[8][2] = {{7,8,}, {6,9}, {5,10}, {4,11}, {3,12}, {2,13}, {1,14}, {0,15}};
+  int pairArr[8][2] = {{7,8}, {6,9}, {5,10}, {4,11}, {3,12}, {2,13}, {1,14}, {0,15}};
   double percentagePixels = ((height) / MAX_HEIGHT) * 8; //8 is the height of the matrix
   int i;
   for(i = 0; i < percentagePixels; i++){
