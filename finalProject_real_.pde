@@ -37,7 +37,7 @@ void draw() {
   fft.analyze(spectrum);  // generate spectrum data
   for(int i=0;i<W;i++)
   {
-    float v = spectrum[i]*8*H; // amplify 50x and scale by H
+    float v = spectrum[i]*8*H; // amplify 8x and scale by H
     data[i]=(byte)((v>H-1)?H-1:v);  // clamp to H-1 max 
     line(i, H-1-data[i], i, H-1 );  // draw spectrum line
     println("data[" + i + "] = " + data[i]);
