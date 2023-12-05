@@ -60,9 +60,6 @@ void draw() {
   if(keyPressed && wasOff){
     wasOff = false;
   }
-  if(wasKey == 1){
-    println("BITCH!"); 
-  }
   port.write(frame_header);  // send frame header / signature
   port.write(wasKey);
   port.write(data);  // send frame buffer
