@@ -9,11 +9,21 @@ final int W=16, H=9;  // Matrix Size: 8x32.
 final int fps = 30;
 final int BAUD_RATE = 230400;
 float[] spectrum = new float[512];  // create a spectrum with 512 frequency bands
-byte[] data = new byte[W+1];  // spectrum data frame buffer: one byte for each spectrum
+byte[] data = new byte[W];  // spectrum data frame buffer: one byte for each spectrum
+byte[][] q = new byte[3][W];
+int qidx=0;
+
+byte[] getMean(){
+  byte[] retVal = new byte[16];
+  for(int i = 0; i < W; i++){
+    retVal[i] = (byte)((q[0][i]+q[1][i]+q[2][i])/((byte)3));
+  }
+  return retVal;
+}
 
 // STEP 1: declare serial port object and serial name
 Serial port;
-final String serialName = "COM3";
+final String serialName = "/dev/cu.usbserial-110";
 
 void setup() {
   size(128, 64);
@@ -28,29 +38,37 @@ void setup() {
   port = new Serial(this, serialName, BAUD_RATE);
 
 }      
-boolean pressed = false;
+boolean wasOff = true;
 byte[] frame_header = new byte[] {61,62,63,64};  // 4-byte frame header
-
+byte wasKey = 0;
 void draw() { 
   background(0);  // clear background: 0
   stroke(255);    // set line color: 255
   fft.analyze(spectrum);  // generate spectrum data
-  data[0] = pressed && !prevPressed;
   for(int i=0;i<W;i++)
   {
-    float v = spectrum[i]*8*H; // amplify 8x and scale by H
-    data[i+1]=(byte)((v>H-1)?H-1:v);  // clamp to H-1 max 
-    line(i, H-1-data[i], i, H-1 );  // draw spectrum line
-    println("data[" + i + "] = " + data[i]);
+    float v = spectrum[i]*13*H; // amplify 8x and scale by H
+    q[qidx][i]=(byte)((v>H-1)?H-1:v);  // clamp to H-1 max 
+    line(i, H-1-q[qidx][i], i, H-1 );  // draw spectrum line
   }
+  qidx = (qidx+1)%3;
+  data = getMean();
   //println(data);
   
   // STEP 3: send frame header array as well as data array to serial
+  wasKey = (byte)((keyPressed && wasOff)?1:0);
+  if(keyPressed && wasOff){
+    wasOff = false;
+  }
+  if(wasKey == 1){
+    println("BITCH!"); 
+  }
   port.write(frame_header);  // send frame header / signature
+  port.write(wasKey);
   port.write(data);  // send frame buffer
-  pressed = false;
 }
 
-void keyPressed(){
-  pressed = true;
+
+void keyReleased(){
+  wasOff = true;
 }
