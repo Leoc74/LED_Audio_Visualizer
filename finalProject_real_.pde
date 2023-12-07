@@ -10,13 +10,18 @@ final int fps = 30;
 final int BAUD_RATE = 230400;
 float[] spectrum = new float[512];  // create a spectrum with 512 frequency bands
 byte[] data = new byte[W];  // spectrum data frame buffer: one byte for each spectrum
-byte[][] q = new byte[3][W];
+int numSamples = 4;
+byte[][] q = new byte[numSamples][W];
 int qidx=0;
 
 byte[] getMean(){
   byte[] retVal = new byte[16];
   for(int i = 0; i < W; i++){
-    retVal[i] = (byte)((q[0][i]+q[1][i]+q[2][i])/((byte)3));
+    int sum = 0;
+    for(int j = 0; j < numSamples; j++){
+      sum += q[j][i];
+    }
+    retVal[i] = (byte)((byte)sum/((byte)numSamples));
   }
   return retVal;
 }
@@ -51,7 +56,7 @@ void draw() {
     q[qidx][i]=(byte)((v>H-1)?H-1:v);  // clamp to H-1 max 
     line(i, H-1-q[qidx][i], i, H-1 );  // draw spectrum line
   }
-  qidx = (qidx+1)%3;
+  qidx = (qidx+1)%numSamples;
   data = getMean();
   //println(data);
   
