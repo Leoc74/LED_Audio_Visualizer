@@ -80,6 +80,7 @@ void loop() {
         colorBand(j, (double)data[j], gradient[j]);
       }
       show_noglitch();
+      free(gradient);
       }
     } 
 }
